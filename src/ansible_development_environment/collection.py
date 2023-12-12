@@ -26,6 +26,7 @@ class Collection:  # pylint: disable=too-many-instance-attributes
     local: bool | None = None
     cnamespace: str | None = None
     cname: str | None = None
+    csource: list | None = None
     specifier: str | None = None
     original: str | None = None
 
@@ -95,6 +96,7 @@ def parse_collection_request(  # noqa: PLR0915
         msg = "Setting request as local"
         output.debug(msg)
         get_galaxy(collection=collection, output=output)
+        get_source_dependencies(collection=collection, output=output)
         return collection
     # spec without dep, local
     path = Path(string).expanduser().resolve()
@@ -108,6 +110,7 @@ def parse_collection_request(  # noqa: PLR0915
         output.debug(msg)
         collection.local = True
         get_galaxy(collection=collection, output=output)
+        get_source_dependencies(collection=collection, output=output)
         return collection
     non_local_re = re.compile(
         r"""
@@ -159,6 +162,9 @@ def get_galaxy(collection: Collection, output: Output) -> None:
     Raises:
         SystemExit: If the collection name is not found
     """
+    # import pdb
+
+    # pdb.set_trace()
     if collection is None or collection.path is None:
         msg = "get_galaxy called without a collection or path"
         raise RuntimeError(msg)
@@ -185,3 +191,40 @@ def get_galaxy(collection: Collection, output: Output) -> None:
     else:
         return
     raise SystemExit(1)  # We shouldn't be here
+
+
+def get_source_dependencies(collection: Collection, output: Output) -> None:
+    """Check source dependencies from the get_source_dependencies.yml file.
+
+    Args:
+        collection: A collection object
+        output: The output object
+    Raises:
+        SystemExit: If the collection name is not found
+    """
+    if collection is None or collection.path is None:
+        msg = "get_source_dependencies called without a collection or path"
+        raise RuntimeError(msg)
+    file_name = collection.path / ".config/source-requirements.yml"
+    if not file_name.exists():
+        err = f"Failed to find {file_name} in {collection.path}"
+        output.critical(err)
+
+    with file_name.open(encoding="utf-8") as fileh:
+        try:
+            yaml_file = yaml.safe_load(fileh)
+        except yaml.YAMLError as exc:
+            err = f"Failed to load yaml file: {exc}"
+            output.critical(err)
+
+    try:
+        collection.csource = yaml_file["galaxy"]
+        for src_dep in collection.csource:
+            msg = f"Found source dependencies {src_dep}"
+        output.debug(msg)
+    except KeyError as exc:
+        err = f"Failed to find collection name in {file_name}: {exc}"
+        output.critical(err)
+    else:
+        return
+    raise SystemExit(1)

@@ -52,7 +52,6 @@ class Installer:
             self._output.critical(err)
 
         self._install_core()
-
         if self._config.args.requirement:
             self._install_galaxy_requirements()
         if self._config.args.collection_specifier:
