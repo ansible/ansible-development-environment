@@ -36,6 +36,10 @@ class Cli:
         self.args = parse()
         if hasattr(self.args, "requirement") and self.args.requirement:
             self.args.requirement = Path(self.args.requirement).expanduser().resolve()
+        if self.args.cpi:
+            self.args.requirement = (
+                Path(".config/source-requirements.yml").expanduser().resolve()
+            )
 
     def init_output(self: Cli) -> None:
         """Initialize the output object."""

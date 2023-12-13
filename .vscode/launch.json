@@ -9,15 +9,9 @@
       "type": "python",
       "request": "launch",
       "module": "ansible_development_environment",
-      "args": ["inspect", "-v", "-v", "-vv"],
-      "justMyCode": true
-    },
-    {
-      "name": "Python: Current File",
-      "type": "python",
-      "request": "launch",
-      "program": "${file}",
-      "console": "integratedTerminal"
+      "args": ["install", ".[test]", "--venv", "venv"],
+      "cwd": "/home/sagpaul/Work/foundation/collections/ansible_collections/cisco/ios",
+      "justMyCode": false
     }
   ]
 }
