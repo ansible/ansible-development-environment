@@ -66,7 +66,7 @@ class Installer:
             local_collections = [
                 collection for collection in collections if collection.local
             ]
-            for local_collection in local_collections:  # debug here
+            for local_collection in local_collections:
                 self._install_local_collection(collection=local_collection)
                 if self._config.args.editable:
                     self._swap_editable_collection(collection=local_collection)
