@@ -9,6 +9,7 @@ cnamespace
 cpart
 cpath
 crepository
+csource
 fileh
 fqcn
 levelname
