@@ -29,6 +29,7 @@ jobs:
             lint
             docs
             pkg
+          platforms: linux,macos
 
   build:
     name: ${{ matrix.name }}
