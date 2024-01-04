@@ -99,6 +99,14 @@ def parse() -> argparse.Namespace:
     )
 
     level1.add_argument(
+        "--cpi",
+        "--collection-pre-install",
+        help="Pre install collections from source, reads requirements-source.yml file.",
+        default=False,
+        action="store_true",
+    )
+
+    level1.add_argument(
         "--na",
         "--no-ansi",
         action="store_true",

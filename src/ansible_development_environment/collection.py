@@ -26,6 +26,7 @@ class Collection:  # pylint: disable=too-many-instance-attributes
     local: bool | None = None
     cnamespace: str | None = None
     cname: str | None = None
+    csource: list[str] | None = None
     specifier: str | None = None
     original: str | None = None
 

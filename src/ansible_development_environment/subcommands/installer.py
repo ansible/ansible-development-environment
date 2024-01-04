@@ -52,8 +52,7 @@ class Installer:
             self._output.critical(err)
 
         self._install_core()
-
-        if self._config.args.requirement:
+        if self._config.args.requirement or self._config.args.cpi:
             self._install_galaxy_requirements()
         if self._config.args.collection_specifier:
             collections = [
@@ -166,10 +165,19 @@ class Installer:
 
     def _install_galaxy_requirements(self: Installer) -> None:
         """Install the collections using requirements.yml."""
-        msg = f"Installing collections from requirements file: {self._config.args.requirement}"
-        self._output.info(msg)
+        if self._config.args.requirement and not self._config.args.cpi:
+            msg = f"Installing collections from requirements file: {self._config.args.requirement}"
+            self._output.info(msg)
+            collections = collections_from_requirements(
+                file=self._config.args.requirement,
+            )
+        elif self._config.args.cpi:
+            msg = "Source installing collections from requirements file source-requirement.yml"
+            self._output.info(msg)
+            collections = collections_from_requirements(
+                file=self._config.args.requirement,
+            )
 
-        collections = collections_from_requirements(file=self._config.args.requirement)
         for collection in collections:
             cnamespace = collection["name"].split(".")[0]
             cname = collection["name"].split(".")[1]
@@ -201,7 +209,10 @@ class Installer:
             self._output.critical(err)
 
         installed = re.findall(r"(\w+\.\w+):.*installed", proc.stdout)
-        msg = f"Installed collections include: {oxford_join(installed)}"
+        if not self._config.args.cpi:
+            msg = f"Installed collections include: {oxford_join(installed)}"
+        else:
+            msg = f"Source installed collections include: {oxford_join(installed)}"
         self._output.note(msg)
 
     def _copy_git_repo_files(
